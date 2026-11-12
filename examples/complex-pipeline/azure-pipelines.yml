@@ -1,0 +1,120 @@
+name: complex-$(Build.SourceBranchName)-$(Date:yyyyMMdd)
+
+trigger:
+  branches:
+    include: [main, release/*]
+  paths:
+    exclude: [docs/*]
+
+pr:
+  branches:
+    include: [main]
+
+schedules:
+  - cron: "0 3 * * *"
+    displayName: Nightly
+    branches:
+      include: [main]
+
+resources:
+  pipelines:
+    - pipeline: upstreamCI
+      source: Shared-Library-CI
+      trigger: true
+  repositories:
+    - repository: templates
+      type: git
+      name: Platform/Pipeline-Templates
+      ref: refs/heads/main
+
+parameters:
+  - name: runTests
+    type: boolean
+    default: true
+  - name: environments
+    type: object
+    default: [staging, production]
+  - name: serviceName
+    type: string
+    default: orders
+
+variables:
+  - group: Shared-Secrets
+  - template: templates/vars-common.yml
+  - name: buildConfig
+    value: Release
+  - name: imageTag
+    value: $(Build.BuildId)
+
+stages:
+  - stage: Build
+    displayName: Build ${{ parameters.serviceName }}
+    jobs:
+      - template: templates/build-job.yml
+        parameters:
+          configuration: $(buildConfig)
+          os: ubuntu-latest
+
+      - job: Lint
+        displayName: Lint and scan
+        steps:
+          - script: npm run lint
+            displayName: Lint
+          - template: templates/security-scan.yml@templates
+            parameters:
+              severity: high
+
+      - ${{ if eq(parameters.runTests, true) }}:
+          - job: Test
+            dependsOn: Lint
+            strategy:
+              matrix:
+                linux:
+                  imageName: ubuntu-latest
+                windows:
+                  imageName: windows-latest
+            pool:
+              vmImage: $(imageName)
+            steps:
+              - script: npm test -- --ci
+                displayName: Unit tests
+              - task: PublishTestResults@2
+                inputs:
+                  testResultsFiles: "**/TEST-*.xml"
+
+  - stage: Package
+    dependsOn: Build
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+    jobs:
+      - job: Image
+        steps:
+          - template: templates/docker-push.yml
+            parameters:
+              tag: $(imageTag)
+
+  - stage: Deploy
+    dependsOn: Package
+    jobs:
+      - ${{ each env in parameters.environments }}:
+          - deployment: Deploy_${{ env }}
+            displayName: Deploy to ${{ env }}
+            environment: ${{ env }}
+            strategy:
+              runOnce:
+                deploy:
+                  steps:
+                    - template: templates/helm-deploy.yml
+                      parameters:
+                        environment: ${{ env }}
+                        service: ${{ parameters.serviceName }}
+                    - script: ./smoke-test.sh ${{ env }}
+                      displayName: Smoke test ${{ env }}
+
+  - stage: Notify
+    dependsOn: []
+    jobs:
+      - job: Announce
+        steps:
+          - checkout: none
+          - bash: echo "notify"
+            displayName: Notify team

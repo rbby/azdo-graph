@@ -1,0 +1,9 @@
+parameters:
+  - name: environment
+    type: string
+  - name: service
+    type: string
+
+steps:
+  - script: helm upgrade --install ${{ parameters.service }} ./chart -f values-${{ parameters.environment }}.yaml
+    displayName: Helm deploy to ${{ parameters.environment }}
