@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ado-pipeline-graph"
+version = "0.1.0"
+description = "Render Azure DevOps pipeline YAML and relationships as Mermaid graphs"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = ["PyYAML>=6.0"]
+
+[project.optional-dependencies]
+test = ["pytest>=7.0"]
+
+[project.scripts]
+ado-pipeline-graph = "ado_pipeline_graph.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["ado_pipeline_graph*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

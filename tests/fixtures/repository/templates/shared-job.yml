@@ -1,0 +1,4 @@
+jobs:
+  - job: Shared
+    steps:
+      - script: echo shared

@@ -1,0 +1,15 @@
+name: Demo
+parameters:
+  configuration: Release
+variables:
+  suffix: done
+stages:
+  - stage: Build
+    jobs:
+      - template: templates/build-job.yml
+  - stage: Test
+    dependsOn: Build
+    jobs:
+      - job: External
+        steps:
+          - template: remote.yml@missingRepo

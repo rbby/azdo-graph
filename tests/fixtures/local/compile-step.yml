@@ -1,0 +1,4 @@
+steps:
+  - script: echo building ${{ parameters.configuration }}-${{ variables.suffix }}
+  - script: echo display
+    displayName: Build ${{ parameters.configuration }}

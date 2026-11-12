@@ -1,0 +1,4 @@
+jobs:
+  - job: FromAlias
+    steps:
+      - script: echo alias

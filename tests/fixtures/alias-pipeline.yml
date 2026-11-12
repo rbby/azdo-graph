@@ -1,0 +1,4 @@
+stages:
+  - stage: Alias
+    jobs:
+      - template: alias-job.yml@shared

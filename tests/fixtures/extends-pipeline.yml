@@ -1,0 +1,4 @@
+extends:
+  template: extends-base.yml
+  parameters:
+    configuration: Release

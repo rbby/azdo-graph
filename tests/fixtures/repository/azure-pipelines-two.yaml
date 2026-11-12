@@ -1,0 +1,7 @@
+trigger: none
+stages:
+  - stage: PipelineB
+    variables:
+      - group: SharedSecrets
+    jobs:
+      - template: templates/shared-job.yml

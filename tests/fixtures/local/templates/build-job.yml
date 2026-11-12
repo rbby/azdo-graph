@@ -1,0 +1,4 @@
+jobs:
+  - job: Compile
+    steps:
+      - template: ../compile-step.yml
