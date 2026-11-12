@@ -1,0 +1,29 @@
+parameters:
+  - name: runTests
+    default: true
+stages:
+  - stage: Build
+    jobs:
+      - job: Main
+        steps:
+          - ${{ if eq(parameters.runTests, true) }}:
+              - script: npm test
+          - ${{ else }}:
+              - script: echo skipped
+          - ${{ each env in parameters.environments }}:
+              - script: deploy ${{ env }}
+              - template: step.yml
+      - ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
+          - job: PrOnly
+            steps:
+              - script: echo pr
+      - ${{ each os in parameters.platforms }}:
+          - job: PerOs
+            steps:
+              - script: echo os
+  - ${{ if true }}:
+      - stage: Optional
+        jobs:
+          - job: Opt
+            steps:
+              - script: echo optional

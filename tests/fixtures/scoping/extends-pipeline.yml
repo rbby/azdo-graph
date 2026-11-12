@@ -1,0 +1,7 @@
+trigger: none
+variables:
+  - group: FromExtender
+stages:
+  - stage: Clobber
+extends:
+  template: templates/extends-base.yml

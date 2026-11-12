@@ -1,0 +1,14 @@
+parameters:
+  - name: leaked
+    default: fromPipeline
+variables:
+  - name: shared
+    value: pipelineValue
+  - template: templates/vars.yml
+steps:
+  - template: templates/step.yml
+    parameters:
+      passed: fromCaller
+  - task: SomeTask@1
+    inputs:
+      group: NotAGroup

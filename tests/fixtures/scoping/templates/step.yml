@@ -1,0 +1,7 @@
+parameters:
+  - name: passed
+    default: templateDefault
+variables:
+  shared: templateValue
+steps:
+  - script: echo ${{ parameters.passed }} ${{ parameters.leaked }} ${{ variables.shared }} ${{ variables.fromVars }}

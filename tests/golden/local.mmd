@@ -1,0 +1,18 @@
+flowchart TD
+  pipeline(["Demo"])
+  stage_1_Build(["Build"])
+  job_2_Compile["Compile"]
+  step_3_echo_building_____parameters_con["echo building ${{ parameters.configuration }}-done"]
+  step_4_Build_____parameters_configurati["Build ${{ parameters.configuration }}"]
+  stage_5_Test(["Test"])
+  job_6_External["External"]
+  external_7_External_template__remote_yml_mi[("External template: remote.yml@missingRepo")]
+  style external_7_External_template__remote_yml_mi stroke-dasharray: 5 5
+  job_2_Compile --> step_3_echo_building_____parameters_con
+  step_3_echo_building_____parameters_con --> step_4_Build_____parameters_configurati
+  stage_1_Build --> job_2_Compile
+  pipeline --> stage_1_Build
+  job_6_External --> external_7_External_template__remote_yml_mi
+  stage_5_Test --> job_6_External
+  pipeline --> stage_5_Test
+  stage_1_Build -- "dependsOn" --> stage_5_Test

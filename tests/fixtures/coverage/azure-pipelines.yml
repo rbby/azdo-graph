@@ -1,0 +1,57 @@
+trigger:
+  branches:
+    include: [main, release/*]
+pr: none
+schedules:
+  - cron: "0 3 * * *"
+    displayName: Nightly
+resources:
+  pipelines:
+    - pipeline: upstream
+      source: Upstream CI
+      trigger: true
+  repositories:
+    - repository: tools
+      type: git
+      name: Shared/Tools
+stages:
+  - stage: Build
+    jobs:
+      - job: Compile
+        strategy:
+          matrix:
+            linux: {vmImage: ubuntu-latest}
+            windows: {vmImage: windows-latest}
+        steps:
+          - checkout: self
+          - powershell: Write-Host hi
+          - download: current
+          - downloadBuild: upstream
+          - getPackage: pkg
+          - publish: out
+          - reviewApp: review
+          - pwsh: echo pwsh
+          - bash: echo bash
+          - task: DotNetCoreCLI@2
+            condition: succeeded()
+      - job: Package
+        dependsOn: Compile
+        steps:
+          - script: echo package
+  - stage: Test
+    condition: succeeded()
+  - stage: Deploy
+    jobs:
+      - deployment: Prod
+        environment: production
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - script: echo deploying
+            on:
+              failure:
+                steps:
+                  - script: echo rollback
+  - stage: Independent
+    dependsOn: []

@@ -1,3 +1,8 @@
 """Azure DevOps pipeline graph generation."""
 
-__version__ = "0.1.0"
+from importlib.metadata import PackageNotFoundError, version
+
+try:
+    __version__ = version("ado-pipeline-graph")
+except PackageNotFoundError:  # running from a source tree that was never installed
+    __version__ = "0+unknown"

@@ -1,0 +1,6 @@
+stages:
+  - stage: FromTemplate
+    jobs:
+      - job: J
+        steps:
+          - script: echo ${{ variables.extenderVar }}
