@@ -1,0 +1,4 @@
+variables:
+  - group: FromVarsTemplate
+  - name: fromVars
+    value: varsValue
