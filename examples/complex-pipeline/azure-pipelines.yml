@@ -21,11 +21,20 @@ resources:
     - pipeline: upstreamCI
       source: Shared-Library-CI
       trigger: true
+    - pipeline: ordersApi
+      source: Orders-API-CI
+      project: Commerce
+      branch: main
   repositories:
     - repository: templates
       type: git
       name: Platform/Pipeline-Templates
       ref: refs/heads/main
+    - repository: sharedLib
+      type: github
+      endpoint: github-service-connection
+      name: contoso/shared-library
+      ref: refs/tags/v2.1.0
 
 parameters:
   - name: runTests

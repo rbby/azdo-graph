@@ -1,0 +1,25 @@
+name: Shared-Library-CI
+
+trigger:
+  tags:
+    include: [v*]
+
+resources:
+  repositories:
+    - repository: self
+    - repository: docs
+      type: git
+      name: Platform/Docs
+      ref: refs/heads/main
+
+stages:
+  - stage: Publish
+    dependsOn: []
+    jobs:
+      - job: Package
+        steps:
+          - checkout: self
+          - checkout: docs
+            path: docs
+          - script: npm publish --dry-run
+            displayName: Publish package

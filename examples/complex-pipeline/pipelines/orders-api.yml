@@ -1,0 +1,35 @@
+name: Orders-API-CI
+
+trigger:
+  branches:
+    include: [main]
+
+resources:
+  repositories:
+    - repository: self
+      trigger: true
+    - repository: sharedLib
+      type: github
+      endpoint: github-service-connection
+      name: contoso/shared-library
+      ref: refs/tags/v2.1.0
+  pipelines:
+    - pipeline: complexBuild
+      source: complex-pipeline
+      trigger:
+        branches:
+          include: [main]
+
+stages:
+  - stage: Verify
+    jobs:
+      - job: ContractTests
+        steps:
+          - checkout: sharedLib
+          - template: steps/contract-tests.yml@sharedLib
+            parameters:
+              suite: orders
+          - download: complexBuild
+            artifact: drop
+          - script: ./verify.sh drop
+            displayName: Verify drop artifact
