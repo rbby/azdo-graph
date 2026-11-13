@@ -1,0 +1,21 @@
+# Reusable step: render pipeline graphs for the repo checked out in this job.
+# Usage:
+#   steps:
+#   - checkout: self
+#   - template: templates/ado-graph.yml@azdoGraph   # via a repository resource
+parameters:
+- name: version
+  default: v0.1.0
+- name: source
+  default: git+https://github.com/rbby/azdo-graph
+- name: outDir
+  default: ado-graph
+
+steps:
+- script: |
+    python -m pip install --quiet uv
+    python -m uv tool run --from "${{ parameters.source }}@${{ parameters.version }}" \
+      ado-pipeline-graph --scan-root . --out-dir "${{ parameters.outDir }}"
+  displayName: Render pipeline graphs
+- publish: ${{ parameters.outDir }}
+  artifact: ado-graph

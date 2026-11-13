@@ -1,0 +1,8 @@
+parameters:
+  - name: severity
+    type: string
+    default: medium
+
+steps:
+  - script: ./scan.sh --min-severity ${{ parameters.severity }}
+    displayName: Security scan (${{ parameters.severity }})
