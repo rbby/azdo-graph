@@ -1,0 +1,20 @@
+parameters:
+  - name: configuration
+    type: string
+    default: Debug
+  - name: os
+    type: string
+    default: ubuntu-latest
+
+jobs:
+  - job: Build
+    pool:
+      vmImage: ${{ parameters.os }}
+    steps:
+      - script: npm ci
+        displayName: Install
+      - script: npm run build -- --configuration ${{ parameters.configuration }}
+        displayName: Build ${{ parameters.configuration }}
+      - template: security-scan.yml
+        parameters:
+          severity: critical

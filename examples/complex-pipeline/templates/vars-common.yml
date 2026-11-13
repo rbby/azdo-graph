@@ -1,0 +1,4 @@
+variables:
+  - group: Common-Settings
+  - name: registry
+    value: myregistry.azurecr.io
