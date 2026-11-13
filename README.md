@@ -12,6 +12,8 @@ The project is not published to PyPI.
 pipx install git+https://github.com/rbby/azdo-graph
 # or
 uv tool install git+https://github.com/rbby/azdo-graph
+# or run without installing (pin a tag once releases exist: ...azdo-graph@v0.1.0)
+uvx --from git+https://github.com/rbby/azdo-graph ado-pipeline-graph --scan-root . --out-dir ado-graph
 ```
 
 From a checkout of the repository:
